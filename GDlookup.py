@@ -24,7 +24,7 @@ class LookUp:
 		print("function calling",gdurl)
 		CompanyRecordIDURL = "https://api.airtable.com/v0/" + self.CRM_BASE_ID + "/" + self.CRM_BASE_Prospectus_Tabke + "?filterByFormula=%7BCompany+Name%7D%3D%27" + urllib.parse.quote_plus(company) + "%27"
 		response = requests.request("GET", CompanyRecordIDURL, headers=self.headers).json()
-		try:
+		if list(response.keys())[0]!="error":
 			print(response)
 			CompanyRecordID = response["records"][0]["id"]		
 			# data = {"fields": {"Glassdoor URL": gdurl,}}
@@ -35,9 +35,8 @@ class LookUp:
 			print(" " * 9, f"UPDATING {company} TO CRM DONE!")
 			if response.status_code != 200:
 				print("Error patching Airtable record:", response.json())
-		except Exception as e:
-			print(e)
-			return
+		else:
+			print(f"{company} failed to update crm")
 
 	def getInputCompanyTable(self):
 		offset = ''
@@ -52,7 +51,7 @@ class LookUp:
 					if recordsKey == "fields":
 						SingleRecord = {}
 						try:
-							if "Glassdoor URL" not in list(recordsValue.keys()):
+							if "Glassdoor URL" not in list(recordsValue.keys()) and "Website (from Companies)" in list(recordsValue.keys()):
 								print(recordsValue['Company Name'])
 								try:
 									SingleRecord["Company Name"] = recordsValue["Company Name"]
@@ -130,11 +129,13 @@ class LookUp:
 			return match.group(1)
 	
 	def search_company(self):
+		print(self.AllRecordIds)
 		for Records in self.AllRecordIds:
 
 			self.sb.open(f"https://www.glassdoor.com/Reviews/company-reviews.htm?typedKeyword={Records['Company Name']}&context=Review&sc.keyword={Records['Company Name']}")			
 			page = self.sb.get_current_url()
-			print(page)
+			print("searching ", Records['Company Name'])
+			print("current url ", page)
 			if "Explore" not in page:
 				isfound = False
 				isCompany = self.get_element('//*[@id="MainCol"]/div/header/h1',by="xpath")			
