@@ -142,7 +142,7 @@ class GlassdoorScraper:
 	def __init__(self):
 		self.sb = None
 		self.company_location = None
-		self.VIEW_NAME = "Dwayne View"  # Enter VIEW_NAME here. OR leave it empty.
+		self.VIEW_NAME = "ATX Ventures"  # Enter VIEW_NAME here. OR leave it empty.
 		self.GLASSDOOR_LOGIN_EMAIL = "czgojueycxqdjnvzjr@tmmbt.net"
 		self.GLASSDOOR_LOGIN_PASSWORD = "czgojueycxqdjnvzjr@tmmbt.net"
 		self.CRM_BASE_ID = 'appjvhsxUUz6o0dzo'
@@ -195,10 +195,23 @@ class GlassdoorScraper:
 			return None
 	
 	def login_glassdoor(self):
-		self.sb.uc_open_with_reconnect("https://www.glassdoor.com/index.htm", 3)
-		self.sb.type("#inlineUserEmail", self.GLASSDOOR_LOGIN_EMAIL + "\n", timeout=10, retry=2)
-		self.sb.type("/html/body/div[3]/section[1]/div[2]/div/div/div[1]/div[1]/div/div/div/form/div[1]/div[1]/div/div[1]/input", self.GLASSDOOR_LOGIN_PASSWORD + "\n",timeout=10, retry=2)
-
+		global status
+		status = False
+		for retry in range(3):
+			try:
+				print(f"Trying login {retry+1} times")
+				self.sb.uc_open_with_reconnect("https://www.glassdoor.com/index.htm", 3)
+				self.sb.type("#inlineUserEmail", self.GLASSDOOR_LOGIN_EMAIL + "\n", timeout=10, retry=2)
+				self.sb.type("/html/body/div[3]/section[1]/div[2]/div/div/div[1]/div[1]/div/div/div/form/div[1]/div[1]/div/div[1]/input", self.GLASSDOOR_LOGIN_PASSWORD + "\n",timeout=10, retry=2)
+				if self.sb.is_valid_url("https://www.glassdoor.com/Community/index.htm"):
+					status = True
+					break
+				else:
+					status = False
+					continue
+			except Exception as e:
+				print(f"Login failed at {retry+1} times")
+		return status
 	def get_elements(self, selector, by):
 		try:
 			self.sb.wait_for_element_visible(selector, by=by, timeout=10)
@@ -219,7 +232,7 @@ class GlassdoorScraper:
 		for Records in self.AllRecordIds:
 			CompanyName = Records["Company Name"]
 			print("Company Name: ",CompanyName, Records["GD URL"])
-			self.sb.wait_for_text_visible(text="Search", selector="/html/body/header/div[1]/div/div[3]/div[1]/button/span",by="xpath")
+			self.sb.wait_for_text_visible(text="Search", selector="//*[@id='UtilityNav']/div[1]/button",by="xpath",timeout=10)
 			self.sb.open(Records["GD URL"])
 			TotalReviews = self.get_element_bs4(selector='//*[@class="review-overview_reviewCount__hQpzR"]',pgSource=self.sb.get_page_source(),types="text")
 			CompanyRating = self.get_element_bs4(selector='//*[@class="rating-headline-average_rating__J5rIy"]',pgSource=self.sb.get_page_source(),types="text")
@@ -356,8 +369,9 @@ class GlassdoorScraper:
 		gsht.get_sheet()
 		with SB(uc=True) as Sb:
 			self.sb = Sb
-			self.login_glassdoor()
-			self.scrape_company_page(gsht)
+			if self.login_glassdoor():
+				print("Login successfully")
+				self.scrape_company_page(gsht)
 			
 if __name__ == "__main__":
 	GD = GlassdoorScraper()
