@@ -145,9 +145,7 @@ class GSheet:
 class Linkedin:
 	def __init__(self):
 		# credential 
-		self.VIEW_NAME = "Dwayne View"
-		self.LinkedIN_LOGIN_EMAIL = "dg135862@gmail.com"
-		self.LinkedIN_LOGIN_PASSWORD = "$ystem@dmin97"
+		self.VIEW_NAME = "ATX Ventures"
 		self.INPUT_BASE_ID = 'appjvhsxUUz6o0dzo'
 		self.OUTPUT_BASE_ID = 'appQfs70fHCsFgeUe'
 		self.API_KEY = 'patQIAmVOLuXelY42.df469e641a30f1e69d29195be1c1b1362c9416fffc0ac17fd3e1a0b49be8b961'

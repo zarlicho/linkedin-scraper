@@ -1,19 +1,19 @@
-import re,requests,urllib.parse,json
+import re,requests,urllib.parse,json,os
 from seleniumbase import SB
+from dotenv import load_dotenv
+load_dotenv()
 
 class LookUp:
 	def __init__(self):
 		self.sb = None
-		self.VIEW_NAME = "Dwayne View" # Enter VIEW_NAME here. OR leave it empty.
-		self.LinkedIN_LOGIN_EMAIL = "dg135862@gmail.com"
-		self.LinkedIN_LOGIN_PASSWORD = "$ystem@dmin97"
-		self.GLASSDOOR_LOGIN_EMAIL = "czgojueycxqdjnvzjr@tmmbt.net"
-		self.GLASSDOOR_PASSWORD = "czgojueycxqdjnvzjr@tmmbt.net"
-		self.INPUT_BASE_ID = 'appjvhsxUUz6o0dzo'
-		self.API_KEY = 'patQIAmVOLuXelY42.df469e641a30f1e69d29195be1c1b1362c9416fffc0ac17fd3e1a0b49be8b961'
-		self.Prospectus_Table = 'tblf4Ed9PaDo76QHH'
-		self.CRM_BASE_ID = 'appjvhsxUUz6o0dzo'
-		self.CRM_BASE_Prospectus_Tabke  = 'tblf4Ed9PaDo76QHH'
+		self.VIEW_NAME = "ATX Ventures" # Enter VIEW_NAME here. OR leave it empty.
+		self.GLASSDOOR_LOGIN_EMAIL = os.getenv("Glassdoor_Email")
+		self.GLASSDOOR_PASSWORD = os.getenv("Glassdoor_Pass")
+		self.INPUT_BASE_ID = os.getenv("INPUT_BASE_ID")
+		self.API_KEY = os.getenv("API_KEY")
+		self.Prospectus_Table = os.getenv("Prospectus_Table")
+		self.CRM_BASE_ID = os.getenv("INPUT_BASE_ID")
+		self.CRM_BASE_Prospectus_Tabke  = os.getenv("Prospectus_Table")
 		self.headers = {'Authorization': 'Bearer '+ self.API_KEY}
 		self.Post_Header = {'Authorization': 'Bearer '+ self.API_KEY,'Content-Type': 'application/json'}
 		self.AllRecordIds = []
@@ -52,24 +52,16 @@ class LookUp:
 						SingleRecord = {}
 						try:
 							if "Glassdoor URL" not in list(recordsValue.keys()) and "Website (from Companies)" in list(recordsValue.keys()):
-								print(recordsValue['Company Name'])
-								try:
-									SingleRecord["Company Name"] = recordsValue["Company Name"]
-								except KeyError:
-									continue
-								try:
-									SingleRecord["HQ"] = recordsValue['HQ']
-								except KeyError:
-									continue
-								try:
-									SingleRecord["Website"] = recordsValue["Website (from Companies)"]
-								except Exception as e:
-									# print(f"{recordsValue['Company Name']} company website not found!")
-									continue
+								SingleRecord = {
+									"Company Name": recordsValue['Company Name'],
+									"Website": recordsValue["Website (from Companies)"],
+									"recId": Records['id']
+								}
+								print(SingleRecord)
 								self.AllRecordIds.append(SingleRecord)
-						except KeyError:
+						except Exception as e:
+							print(e)
 							print(f"{recordsValue['Company Name']} already exist!")
-							print(recordsValue['Glassdoor URL'])
 			try:
 				nextOffset = OutputTable["offset"]
 				offset = nextOffset
@@ -189,6 +181,8 @@ class LookUp:
 						else:
 							print(f"{Records['Company Name']} not found")
 							self.updateCrm(company=Records['Company Name'],gdurl="\n")
+			else:
+				self.updateCrm(company=Records['Company Name'],gdurl="\n")
 
 	def Main(self):
 		with SB(uc=True) as Sb:

@@ -146,9 +146,7 @@ class GSheet:
 
 class LinkedIn:
 	def __init__(self):
-		self.VIEW_NAME = "Dwayne View" # Enter VIEW_NAME here. OR leave it empty.
-		self.LinkedIN_LOGIN_EMAIL = "dg135862@gmail.com"
-		self.LinkedIN_LOGIN_PASSWORD = "$ystem@dmin97"
+		self.VIEW_NAME = "ATX Ventures" # Enter VIEW_NAME here. OR leave it empty.
 		self.INPUT_BASE_ID = 'appjvhsxUUz6o0dzo'
 		self.OUTPUT_BASE_ID = 'appQfs70fHCsFgeUe'
 		self.API_KEY = 'patQIAmVOLuXelY42.df469e641a30f1e69d29195be1c1b1362c9416fffc0ac17fd3e1a0b49be8b961'
@@ -162,6 +160,7 @@ class LinkedIn:
 		self.AllRecordIds = []
 
 	def getInputCompanyTable(self):
+		print("GETING all linkedin data")
 		offset = ''
 		while 1:
 			CompanyTableURL = 'https://api.airtable.com/v0/'+self.INPUT_BASE_ID +'/'+ self.Prospectus_Table
@@ -382,8 +381,8 @@ class LinkedIn:
 					} 
 			gsht.update_locally(service=services,cell_updated=gsheet_update)
 		return driver		
-	
-if __name__ == "__name__":
+
+if __name__ == "__main__":
 	lnk = LinkedIn()
 	print("Getting Companies to be Scraped:")
 	lnk.getInputCompanyTable()

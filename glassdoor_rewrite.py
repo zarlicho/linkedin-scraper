@@ -143,12 +143,12 @@ class GlassdoorScraper:
 		self.sb = None
 		self.company_location = None
 		self.VIEW_NAME = "ATX Ventures"  # Enter VIEW_NAME here. OR leave it empty.
-		self.GLASSDOOR_LOGIN_EMAIL = "czgojueycxqdjnvzjr@tmmbt.net"
-		self.GLASSDOOR_LOGIN_PASSWORD = "czgojueycxqdjnvzjr@tmmbt.net"
-		self.CRM_BASE_ID = 'appjvhsxUUz6o0dzo'
+		self.GLASSDOOR_LOGIN_EMAIL = os.getenv("Glassdoor_Email")
+		self.GLASSDOOR_LOGIN_PASSWORD = os.getenv("Glassdoor_Pass")
+		self.CRM_BASE_ID = os.getenv("INPUT_BASE_ID")
 		self.CRM_BASE_Prospectus_Tabke = 'tblf4Ed9PaDo76QHH'
 		self.API_KEY = 'patQIAmVOLuXelY42.df469e641a30f1e69d29195be1c1b1362c9416fffc0ac17fd3e1a0b49be8b961'
-		self.WEBSCRAPER_BASE_ID = "appQfs70fHCsFgeUe"
+		self.WEBSCRAPER_BASE_ID = os.getenv("Prospectus_Table")
 		self.WEBSCRAPER_BASE_GLASSDOOR_TABLE_ID = "tbl2hHNNmdeHYSKMr"
 		self.headers = {'Authorization': 'Bearer ' + self.API_KEY}
 		self.Post_Header = {'Authorization': 'Bearer ' + self.API_KEY,'Content-Type': 'application/json'}
